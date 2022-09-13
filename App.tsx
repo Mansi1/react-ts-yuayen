@@ -24,7 +24,7 @@ const qr = new QRCodeStyling({
 });
 
 export default function App() {
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(300);
   const [color, setColor] = useState('#1e6eb4');
   const [qrstyle, setQrstyle] = useState('rounded');
@@ -40,12 +40,25 @@ export default function App() {
     setQrstyle(e.target.value);
   }
 
-  function download(fileExt) {
-    return () =>
-      qr.download({
-        extension: fileExt,
-      });
-  }
+  const download = (fileExt) => () => {
+    const { current } = ref;
+    if (current) {
+      const svg = current.children[0];
+      console.log(svg);
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+      const url =
+        'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+      const a = document.createElement('a');
+      a.setAttribute('style', 'display: none');
+      a.href = url;
+      a.download = 'label.svg';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  };
 
   useEffect(() => {
     qr.append(ref.current);
