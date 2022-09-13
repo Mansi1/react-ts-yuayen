@@ -2,6 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import logo from './logo.svg';
+import logoWhite from './logo-white.svg';
+import logoBlack from './logo-black.svg';
+import fontStyle from './latinFont';
 
 import './style.css';
 
@@ -11,12 +14,8 @@ const qr = new QRCodeStyling({
   width: 300,
   height: 300,
   type: 'svg',
-  image: logo,
+  image: logoBlack,
   errorCorrectionLevel: 'H',
-  dotsOptions: {
-    color: '#4267b2',
-    type: 'rounded',
-  },
   imageOptions: {
     crossOrigin: 'anonymous',
     margin: 10,
@@ -69,29 +68,28 @@ export default function App() {
 
     qr.update({
       width: size,
-      height: size + 60,
+      height: size,
       data: value,
       dotsOptions: {
-        color: isNegative ? '#fff' : color,
+        color: color,
         type: qrstyle,
       },
       backgroundOptions: {
-        color: isNegative ? '#000' : '#fff',
+        color: 'none',
       },
     });
 
-    const text = `<rect x="0" y="330" width="100%" height="30" fill="#fff"/>
-    <g fill="${isNegative ? '#000' : color}">
-      <text text-anchor="middle" font-size="15" x="150" y="350">${link}</text>
+    const text = `<g fill="${color}" style="font-family: 'IBM Plex Sans'">
+      <text text-anchor="middle" font-size="13" x="150" y="320">${link}</text>
     </g>`;
 
     setTimeout(() => {
-      ref.current.lastChild.innerHTML += text;
+      const svg = ref.current.lastChild;
+      const defs = svg.querySelector('defs');
+      defs.innerHTML += fontStyle;
+      svg.setAttribute('height', 330);
+      svg.innerHTML += text;
     }, 0);
-
-    if (color === 'negative') {
-      ref.current.lastChild.style.filter = 'invert(1)';
-    }
   }, [size, value, color, qrstyle, link]);
 
   return (
@@ -104,9 +102,9 @@ export default function App() {
       />
 
       <select value={color} className="form" onChange={onSelectColor}>
-        <option value="#1e6eb4">Blue</option>
+        <option value="#003C91">Blue</option>
         <option value="#000">Black</option>
-        <option value="negative">Negative</option>
+        <option value="#fff">white</option>
       </select>
 
       <select value={qrstyle} className="form" onChange={onSelectStyle}>
