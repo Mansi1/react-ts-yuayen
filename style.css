@@ -1,0 +1,14 @@
+h1, p {
+  font-family: Lato;
+}
+
+.form {
+  display: block;
+  width: 360px;
+  padding: 10px;
+  margin: 10px auto;
+}
+
+select.form {
+  width: 385px;
+}
